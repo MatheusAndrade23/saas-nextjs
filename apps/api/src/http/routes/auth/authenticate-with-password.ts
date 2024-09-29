@@ -26,6 +26,14 @@ export async function authenticateWithPassword(app: FastifyInstance) {
           tags: ['Auth'],
           summary: 'Authenticate with e-mail & password',
           body: authenticateWithPasswordSchema,
+          response: {
+            400: z.object({
+              message: z.string(),
+            }),
+            201: z.object({
+              token: z.string(),
+            }),
+          },
         },
       },
       async (request, reply) => {
@@ -39,11 +47,9 @@ export async function authenticateWithPassword(app: FastifyInstance) {
           return reply.status(400).send({ message: 'Invalid credentials.' })
         }
         if (userFromEmail.passwordHash === null) {
-          return reply
-            .status(400)
-            .send({
-              message: 'User does not have a password, use social login.',
-            })
+          return reply.status(400).send({
+            message: 'User does not have a password, use social login.',
+          })
         }
         const isPasswordValid = await compare(
           password,

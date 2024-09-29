@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { hash } from 'bcryptjs'
 
 import { prisma } from '@/lib/prisma'
+import { BadRequestError } from '../_errors/bad-request-error'
 
 const createUserBodySchema = z.object({
   name: z.string(),
@@ -33,9 +34,7 @@ export async function createAccount(app: FastifyInstance) {
       })
 
       if (userWithSameEmail) {
-        return reply.status(400).send({
-          message: 'User with same email already exists',
-        })
+        throw new BadRequestError('User with same e-mail already exists.')
       }
 
       const [_, domain] = email.split('@')

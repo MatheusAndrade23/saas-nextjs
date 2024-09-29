@@ -3,6 +3,7 @@ import fastifySwagger from '@fastify/swagger'
 import fastifySwaggerUI from '@fastify/swagger-ui'
 import fastifyJwt from '@fastify/jwt'
 import fastify from 'fastify'
+
 import {
   jsonSchemaTransform,
   serializerCompiler,
@@ -11,8 +12,10 @@ import {
 } from 'fastify-type-provider-zod'
 
 import { createAccount } from './routes/auth/create-account'
-import { authenticateWithPassword } from '@/http/routes/auth/authenticate-with-password'
+import { authenticateWithPassword } from './routes/auth/authenticate-with-password'
 import { getProfile } from './routes/auth/get-profile'
+
+import { errorHandler } from '@/http/error-handler'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -39,6 +42,7 @@ app.register(fastifySwaggerUI, {
   routePrefix: '/docs',
 })
 
+app.setErrorHandler(errorHandler)
 app.register(fastifyCors)
 app.register(createAccount)
 app.register(authenticateWithPassword)
